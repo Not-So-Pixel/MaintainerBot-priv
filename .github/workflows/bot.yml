@@ -1,0 +1,35 @@
+name: PixelOS-Bot
+on:
+  schedule:
+    - cron: '0 */05 * * *'
+  workflow_dispatch:
+
+env:
+  BOT_API: ${{ secrets.BOT_API }}
+  TOKEN: ${{ secrets.GH_PAT }}
+  GITHUB_TOKEN: ${{ secrets.GH_PAT }}
+
+jobs:
+  postman:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install Dep
+        run: sudo pip install python-telegram-bot
+      
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          path: MaintainerBot
+      
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+        with:
+          repository: PixelOS-Releases/releases 
+          token: ${{ secrets.GH_PAT }}
+          path: releases
+      
+
+      - name: Bot
+        run: sudo -E python3 MaintainerBot/MaintainerBot
+

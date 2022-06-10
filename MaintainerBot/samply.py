@@ -22,7 +22,7 @@ commands = [
 # "echo \"deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main\" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null",
 # "sudo apt update",
 # "sudo apt install gh",
-    "cd releases && echo $(pwd) && gh workflow run 17046064"
+    "cd releases && echo $(pwd) && gh workflow run mojito-s.yml"
 ]
 
 for command in commands:

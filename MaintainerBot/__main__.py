@@ -21,7 +21,6 @@ from telegram import *
 from telegram.ext import *
 import requests
 import json
-import texts, info
 
 BOT_API = os.environ.get("BOT_API")
 
@@ -30,42 +29,39 @@ updater = Updater(BOT_API, use_context=True, workers=128)
 dispatcher = updater.dispatcher
 timeout = 60
 
+admins = [
+    "1366397711", 
+]
+
 def trigger_fun(update: Update, context: CallbackContext):
     supported_devices = []
 
     in_official_devices_list = False
-    in_releases_devices_list = False
 
     request = requests.get("https://raw.githubusercontent.com/PixelOS-Pixelish/official_devices/twelve/API/devices.json")
     json_processed = json.loads(request.content)
-
-    for devices in json_processed:
-        if devices['active'] and devices["codename"] == update.message.text.split(" ")[1]:
+    for devices in json_processed["devices"]:
+        current_device = update.message.text.split(" ")[1]
+        current_device = current_device.replace(" ", "")
+        print (current_device)
+        print (devices)
+        if devices["codename"] == current_device:
             in_official_devices_list = True
             print ("Device is in Official list")
             break
     
-    request = requests.get("https://raw.githubusercontent.com/PixelOS-Pixelish/official_devices/twelve/API/devices.json")
-    json_processed = json.loads(request.content)
+    if str(update.message.from_user.id) in admins and not in_official_devices_list:
+        bot.send_message(disable_web_page_preview=True, parse_mode="HTML", chat_id=update.effective_chat.id,
+                                    text="Device not found in official devices list\nAdd it to https://github.com/PixelOS-Pixelish/official_devices/blob/twelve/API/devices.json", reply_to_message_id=update.message.message_id, )
 
-    for devices in json_processed:
-        if devices['active'] and devices["codename"] == update.message.text.split(" ")[1]:
-            in_official_devices_list = True
-            print ("Device is in Official list")
-            break
+    if str(update.message.from_user.id) in admins and in_official_devices_list:
+        os.system("cd releases && echo $(pwd) && gh workflow run " + update.message.text.split(" ")[1] + "-s.yml")
 
+        message_to_send = "Build for " + current_device + " has been triggered"
 
+        message_sent = bot.send_message(disable_web_page_preview=True, parse_mode="HTML", chat_id=update.effective_chat.id,
+                                    text=message_to_send, reply_to_message_id=update.message.message_id, )
 
-    message = "The following devices have Official Project Sakura builds:\n\n"
-    number = 1
-    for i in supported_devices:
-        message = message + str(number) + ". " + str(i) + "\n"
-        number += 1
-
-    message_sent = bot.send_message(disable_web_page_preview=True, parse_mode="HTML", chat_id=update.effective_chat.id,
-                                    text=message, reply_to_message_id=update.message.message_id, )
-
-    auto_delete(message_sent, update)
 
 
 trigger_command = CommandHandler("trigger", trigger_fun, run_async=True)
