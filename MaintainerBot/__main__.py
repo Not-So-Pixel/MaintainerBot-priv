@@ -30,7 +30,7 @@ dispatcher = updater.dispatcher
 timeout = 60
 
 admins = [
-    "1366397711", "1054531133", "966374317", "771065537", "336444854",
+    "1366397711", "1054531133", "966374317", "771065537", "336444854", "2122096311",
 ]
 
 def trigger_fun(update: Update, context: CallbackContext):
