@@ -64,8 +64,22 @@ def trigger_fun(update: Update, context: CallbackContext):
 
 
 
-trigger_command = CommandHandler("trigger", trigger_fun, run_async=True)
+def cancel_fun(update: Update, context: CallbackContext):
+    run_id = update.message.text.split(" ")[1]
+    if str(update.message.from_user.id) in admins and run_id != None:
+        os.system("cd releases && echo $(pwd) && gh api --method POST -H \"Accept: application/vnd.github.v3+json\" /repos/PixelOS-Releases/releases/actions/runs/" + run_id +"/cancel ")
 
+        message_to_send = "Build " + run_id + " has been cancelled"
+
+        message_sent = bot.send_message(disable_web_page_preview=True, parse_mode="HTML", chat_id=update.effective_chat.id,
+                                    text=message_to_send, reply_to_message_id=update.message.message_id, )
+
+
+
+trigger_command = CommandHandler("trigger", trigger_fun, run_async=True)
 dispatcher.add_handler(trigger_command)
+
+cancel_command = CommandHandler("cancel", cancel_fun, run_async=True)
+dispatcher.add_handler(cancel_command)
 
 updater.start_polling()
