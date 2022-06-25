@@ -65,7 +65,7 @@ def trigger_fun(update: Update, context: CallbackContext):
 
 
 def cancel_fun(update: Update, context: CallbackContext):
-    run_id = update.message.text.split(" ")[1]
+    run_id = update.message.text.split(" ")[1].split("/")[-1]
     if str(update.message.from_user.id) in admins and run_id != None:
         os.system("cd releases && echo $(pwd) && gh api --method POST -H \"Accept: application/vnd.github.v3+json\" /repos/PixelOS-Releases/releases/actions/runs/" + run_id +"/cancel ")
 
