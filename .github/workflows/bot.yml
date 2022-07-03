@@ -1,7 +1,5 @@
 name: PixelOS-Bot
 on:
-  schedule:
-    - cron: '0 */05 * * *'
   workflow_dispatch:
 
 env:
